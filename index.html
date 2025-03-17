@@ -3,16 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Live Stream</title>
+    <!-- Video.js стили -->
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet">
+    
+    <style>
+        /* Адаптивный контейнер */
+        .video-container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <video id="live-stream" class="video-js vjs-default-skin" controls>
-        <source src="http://135.181.115.81:8000/play/a00f/index.m3u8?token=livetv" type="application/x-mpegURL">
-    </video>
+    <div class="video-container">
+        <video-js id="live-stream" class="video-js vjs-fluid" controls preload="auto">
+            <!-- Тестовый поток (замените на свой) -->
+            <source src="http://135.181.115.81:8000/play/a00f/index.m3u8?token=livetv" type="application/x-mpegURL">
+            <!-- Fallback сообщение -->
+            <p class="vjs-no-js">
+                Для просмотра видео включите JavaScript или обновите браузер
+            </p>
+        </video-js>
+    </div>
+
+    <!-- Video.js скрипт -->
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls@5.15.0/dist/videojs-contrib-hls.min.js"></script>
+
     <script>
-        const player = videojs('live-stream');
+        // Инициализация плеера
+        const player = videojs('live-stream', {
+            autoplay: 'muted', // Автовоспроизведение с отключенным звуком
+            controls: true,     // Показывать элементы управления
+            fluid: true,       // Адаптивный дизайн
+            liveui: true,      // Специальный интерфейс для live-стримов
+            playbackRates: [0.5, 1, 1.5, 2], // Скорости воспроизведения
+            html5: {
+                vhs: {
+                    overrideNative: true, // Использовать Video.js вместо native HLS
+                    enableLowInitialPlaylist: true // Оптимизация для live-стримов
+                }
+            }
+        });
+
+        // Обработчики событий
+        player.on('error', () => {
+            console.error('Ошибка плеера:', player.error());
+        });
+
+        player.on('loadedmetadata', () => {
+            console.log('Метаданные загружены');
+        });
     </script>
 </body>
 </html>
